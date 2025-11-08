@@ -1,8 +1,10 @@
 package ru.practicum.shareit.user.controller;
 
 import jakarta.validation.Valid;
+import jakarta.validation.constraints.Positive;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import ru.practicum.shareit.user.dto.UserDto;
 import ru.practicum.shareit.user.mapper.UserMapper;
@@ -12,12 +14,10 @@ import ru.practicum.shareit.user.service.UserService;
 import java.util.List;
 import java.util.stream.Collectors;
 
-/**
- * TODO Sprint add-controllers.
- */
 @RestController
 @RequestMapping(path = "/users")
 @RequiredArgsConstructor
+@Validated
 public class UserController {
     private final UserService userService;
 
@@ -29,7 +29,7 @@ public class UserController {
     }
 
     @PatchMapping("/{userId}")
-    public ResponseEntity<UserDto> updateUser(@PathVariable Long userId,
+    public ResponseEntity<UserDto> updateUser(@PathVariable @Positive Long userId,
                                               @RequestBody UserDto userDto) {
 
         User existingUser = userService.getUser(userId);
@@ -40,7 +40,7 @@ public class UserController {
     }
 
     @GetMapping("/{userId}")
-    public ResponseEntity<UserDto> getUser(@PathVariable Long userId) {
+    public ResponseEntity<UserDto> getUser(@PathVariable @Positive Long userId) {
         User user = userService.getUser(userId);
         return ResponseEntity.ok(UserMapper.toDto(user));
     }
@@ -55,7 +55,7 @@ public class UserController {
     }
 
     @DeleteMapping("/{userId}")
-    public ResponseEntity<Void> deleteUser(@PathVariable Long userId) {
+    public ResponseEntity<Void> deleteUser(@PathVariable @Positive Long userId) {
         userService.deleteUser(userId);
         return ResponseEntity.noContent().build();
     }
