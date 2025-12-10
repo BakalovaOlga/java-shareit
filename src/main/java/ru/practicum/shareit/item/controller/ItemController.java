@@ -5,7 +5,9 @@ import jakarta.validation.constraints.Positive;
 import lombok.RequiredArgsConstructor;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
+import ru.practicum.shareit.item.dto.CommentDto;
 import ru.practicum.shareit.item.dto.ItemDto;
+import ru.practicum.shareit.item.dto.ItemWithCommentsAndBookingDto;
 import ru.practicum.shareit.item.mapper.ItemMapper;
 import ru.practicum.shareit.item.model.Item;
 import ru.practicum.shareit.item.service.ItemService;
@@ -40,23 +42,27 @@ public class ItemController {
         return ItemMapper.toDto(updatedItem);
     }
 
-    @GetMapping("/{itemId}")
-    public ItemDto getItemById(
+    @PostMapping("/{itemId}/comment")
+    public CommentDto addComment(
             @PathVariable @Positive Long itemId,
-            @RequestHeader(value = "X-Sharer-User-Id", required = false) @Positive Long userId) {
-        Item item = itemService.getById(itemId);
-        return ItemMapper.toDto(item);
+            @RequestBody CommentDto commentDto,
+            @RequestHeader("X-Sharer-User-Id") @Positive Long userId) {
+        return itemService.addComment(userId, itemId, commentDto);
+    }
+
+    @GetMapping("/{itemId}")
+    public ItemWithCommentsAndBookingDto getItemById(
+            @PathVariable @Positive Long itemId,
+            @RequestHeader(value = "X-Sharer-User-Id", required = false) Long userId) {
+        return itemService.getItemWithCommentsAndBookings(itemId, userId);
     }
 
     @GetMapping
-    public List<ItemDto> getAllItemsByOwner(
+    public List<ItemWithCommentsAndBookingDto> getAllItemsByOwner(
             @RequestHeader("X-Sharer-User-Id") @Positive Long ownerId,
             @RequestParam(defaultValue = "0") Integer from,
             @RequestParam(defaultValue = "10") Integer size) {
-        List<Item> items = itemService.getAllByOwner(ownerId, from, size);
-        return items.stream()
-                .map(ItemMapper::toDto)
-                .collect(Collectors.toList());
+        return itemService.getItemsWithCommentsAndBookingsByOwner(ownerId, from, size);
     }
 
     @GetMapping("/search")
