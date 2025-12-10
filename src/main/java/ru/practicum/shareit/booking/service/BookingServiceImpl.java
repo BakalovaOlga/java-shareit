@@ -25,7 +25,6 @@ import java.util.List;
 
 
 @Service
-@Transactional
 @RequiredArgsConstructor
 @Slf4j
 public class BookingServiceImpl implements BookingService {
@@ -123,6 +122,7 @@ public class BookingServiceImpl implements BookingService {
 
         BookingStatus newStatus = status ? BookingStatus.APPROVED : BookingStatus.REJECTED;
         booking.setStatus(newStatus);
+        booking = bookingRepository.save(booking);
 
         log.info("Бронирование с id: {} {} пользователем с id: {}",
                 bookingId,
@@ -132,7 +132,6 @@ public class BookingServiceImpl implements BookingService {
         return bookingMapper.toDto(booking);
     }
 
-    @Transactional
     @Override
     public List<BookingDto> getAllItemBooking(Long userId, BookingState state) {
         LocalDateTime now = LocalDateTime.now();
