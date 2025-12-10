@@ -130,9 +130,6 @@ public class ItemServiceImpl implements ItemService {
         if (size <= 0) {
             throw new ValidationException("Параметр 'size' должен быть положительным");
         }
-        if (size == 0) {
-            throw new ValidationException("Параметр 'size' не может быть равен 0");
-        }
     }
 
     public ItemWithCommentsAndBookingDto getItemWithCommentsAndBookings(Long itemId, Long userId) {
@@ -142,7 +139,7 @@ public class ItemServiceImpl implements ItemService {
         BookingShortDto lastBooking = null;
         BookingShortDto nextBooking = null;
 
-        if (userId != null && item.getOwner().getId().equals(userId)) {
+        if (item.getOwner().getId().equals(userId)) {
             lastBooking = bookingService.getLastBookingForItem(itemId);
             nextBooking = bookingService.getNextBookingForItem(itemId);
         }
