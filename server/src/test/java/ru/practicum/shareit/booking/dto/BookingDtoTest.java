@@ -48,16 +48,13 @@ public class BookingDtoTest {
         JsonContent<BookingDto> result = json.write(dto);
 
         assertThat(result).extractingJsonPathNumberValue("$.id").isEqualTo(1);
-
         assertThat(result).extractingJsonPathNumberValue("$.item.id").isEqualTo(10);
         assertThat(result).extractingJsonPathStringValue("$.item.name").isEqualTo("Test Item");
         assertThat(result).extractingJsonPathStringValue("$.item.description").isEqualTo("Test Description");
         assertThat(result).extractingJsonPathBooleanValue("$.item.available").isEqualTo(true);
-
         assertThat(result).extractingJsonPathNumberValue("$.booker.id").isEqualTo(100);
         assertThat(result).extractingJsonPathStringValue("$.booker.name").isEqualTo("Test User");
         assertThat(result).extractingJsonPathStringValue("$.booker.email").isEqualTo("test@example.com");
-
         assertThat(result).extractingJsonPathStringValue("$.start")
                 .isEqualTo("2024-12-01T10:00:00");
         assertThat(result).extractingJsonPathStringValue("$.end")
@@ -67,20 +64,23 @@ public class BookingDtoTest {
 
     @Test
     void testSerializeWithNullFields() throws Exception {
+        LocalDateTime start = LocalDateTime.of(2024, 12, 1, 10, 0, 0);
+        LocalDateTime end = LocalDateTime.of(2024, 12, 2, 10, 0, 0);
+
         BookingDto dto = BookingDto.builder()
                 .id(1L)
                 .item(null)
                 .booker(null)
-                .start(LocalDateTime.of(2024, 12, 1, 10, 0, 0))
-                .end(LocalDateTime.of(2024, 12, 2, 10, 0, 0))
+                .start(start)
+                .end(end)
                 .status(null)
                 .build();
 
         JsonContent<BookingDto> result = json.write(dto);
 
         assertThat(result).extractingJsonPathNumberValue("$.id").isEqualTo(1);
-        assertThat(result).extractingJsonPathStringValue("$.start").isNotNull();
-        assertThat(result).extractingJsonPathStringValue("$.end").isNotNull();
+        assertThat(result).extractingJsonPathStringValue("$.start").isEqualTo("2024-12-01T10:00:00");
+        assertThat(result).extractingJsonPathStringValue("$.end").isEqualTo("2024-12-02T10:00:00");
         assertThat(result).extractingJsonPathValue("$.item").isNull();
         assertThat(result).extractingJsonPathValue("$.booker").isNull();
         assertThat(result).extractingJsonPathValue("$.status").isNull();
@@ -111,18 +111,15 @@ public class BookingDtoTest {
         BookingDto dto = json.parse(jsonContent).getObject();
 
         assertThat(dto.getId()).isEqualTo(1L);
-
         assertThat(dto.getItem()).isNotNull();
         assertThat(dto.getItem().getId()).isEqualTo(10L);
         assertThat(dto.getItem().getName()).isEqualTo("Test Item");
         assertThat(dto.getItem().getDescription()).isEqualTo("Test Description");
         assertThat(dto.getItem().getAvailable()).isTrue();
-
         assertThat(dto.getBooker()).isNotNull();
         assertThat(dto.getBooker().getId()).isEqualTo(100L);
         assertThat(dto.getBooker().getName()).isEqualTo("Test User");
         assertThat(dto.getBooker().getEmail()).isEqualTo("test@example.com");
-
         assertThat(dto.getStart()).isEqualTo(LocalDateTime.of(2024, 12, 1, 10, 0, 0));
         assertThat(dto.getEnd()).isEqualTo(LocalDateTime.of(2024, 12, 2, 10, 0, 0));
         assertThat(dto.getStatus()).isEqualTo("WAITING");
@@ -167,8 +164,8 @@ public class BookingDtoTest {
         assertThat(dto.getId()).isEqualTo(1L);
         assertThat(dto.getItem()).isNull();
         assertThat(dto.getBooker()).isNull();
-        assertThat(dto.getStart()).isNotNull();
-        assertThat(dto.getEnd()).isNotNull();
+        assertThat(dto.getStart()).isEqualTo(LocalDateTime.of(2024, 12, 1, 10, 0, 0));
+        assertThat(dto.getEnd()).isEqualTo(LocalDateTime.of(2024, 12, 2, 10, 0, 0));
         assertThat(dto.getStatus()).isNull();
     }
 
@@ -206,7 +203,6 @@ public class BookingDtoTest {
         assertThat(deserializedDto.getStart()).isEqualTo(originalDto.getStart());
         assertThat(deserializedDto.getEnd()).isEqualTo(originalDto.getEnd());
         assertThat(deserializedDto.getStatus()).isEqualTo(originalDto.getStatus());
-
         assertThat(deserializedDto.getItem().getId()).isEqualTo(originalDto.getItem().getId());
         assertThat(deserializedDto.getItem().getName()).isEqualTo(originalDto.getItem().getName());
         assertThat(deserializedDto.getBooker().getId()).isEqualTo(originalDto.getBooker().getId());

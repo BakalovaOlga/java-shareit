@@ -30,13 +30,13 @@ public class BookingRequestDtoTest {
     void setUp() {
         ValidatorFactory factory = Validation.buildDefaultValidatorFactory();
         validator = factory.getValidator();
-        now = LocalDateTime.now();
+        now = LocalDateTime.now().withNano(0);
     }
 
     @Test
     void testSerialize() throws Exception {
-        LocalDateTime start = now.plusDays(1);
-        LocalDateTime end = now.plusDays(2);
+        LocalDateTime start = now.plusDays(1).withNano(0);
+        LocalDateTime end = now.plusDays(2).withNano(0);
 
         BookingRequestDto dto = BookingRequestDto.builder()
                 .id(1L)
@@ -101,8 +101,8 @@ public class BookingRequestDtoTest {
     void testValidationWithValidDates() {
         BookingRequestDto dto = BookingRequestDto.builder()
                 .itemId(10L)
-                .start(now.plusDays(1))
-                .end(now.plusDays(2))
+                .start(now.plusDays(1).withNano(0))
+                .end(now.plusDays(2).withNano(0))
                 .build();
 
         Set<ConstraintViolation<BookingRequestDto>> violations = validator.validate(dto);
@@ -114,8 +114,8 @@ public class BookingRequestDtoTest {
     void testValidationWithEndNotInFuture() {
         BookingRequestDto dto = BookingRequestDto.builder()
                 .itemId(10L)
-                .start(now.plusDays(1))
-                .end(now.minusDays(1))
+                .start(now.plusDays(1).withNano(0))
+                .end(now.minusDays(1).withNano(0))
                 .build();
 
         Set<ConstraintViolation<BookingRequestDto>> violations = validator.validate(dto);

@@ -21,7 +21,8 @@ public class ItemWithCommentsAndBookingDtoTest {
 
     @Test
     void testSerialize() throws IOException {
-        LocalDateTime now = LocalDateTime.now();
+        LocalDateTime comment1Time = LocalDateTime.of(2024, 12, 1, 10, 0, 0);
+        LocalDateTime comment2Time = LocalDateTime.of(2024, 12, 2, 10, 0, 0);
 
         BookingShortDto lastBooking = BookingShortDto.builder()
                 .id(1L)
@@ -37,14 +38,14 @@ public class ItemWithCommentsAndBookingDtoTest {
                 .id(10L)
                 .text("Great item!")
                 .authorName("John Doe")
-                .created(now.minusDays(1))
+                .created(comment1Time)
                 .build();
 
         CommentDto comment2 = CommentDto.builder()
                 .id(11L)
                 .text("Good quality")
                 .authorName("Jane Smith")
-                .created(now.minusHours(5))
+                .created(comment2Time)
                 .build();
 
         ItemWithCommentsAndBookingDto dto = ItemWithCommentsAndBookingDto.builder()
@@ -67,23 +68,21 @@ public class ItemWithCommentsAndBookingDtoTest {
         assertThat(result).extractingJsonPathBooleanValue("$.available").isTrue();
         assertThat(result).extractingJsonPathNumberValue("$.ownerId").isEqualTo(200);
         assertThat(result).extractingJsonPathNumberValue("$.requestId").isEqualTo(300);
-
-        //lastBooking
         assertThat(result).extractingJsonPathNumberValue("$.lastBooking.id").isEqualTo(1);
         assertThat(result).extractingJsonPathNumberValue("$.lastBooking.bookerId").isEqualTo(100);
-
-        //nextBooking
         assertThat(result).extractingJsonPathNumberValue("$.nextBooking.id").isEqualTo(2);
         assertThat(result).extractingJsonPathNumberValue("$.nextBooking.bookerId").isEqualTo(101);
-
-        //comments
         assertThat(result).extractingJsonPathArrayValue("$.comments").hasSize(2);
         assertThat(result).extractingJsonPathNumberValue("$.comments[0].id").isEqualTo(10);
         assertThat(result).extractingJsonPathStringValue("$.comments[0].text").isEqualTo("Great item!");
         assertThat(result).extractingJsonPathStringValue("$.comments[0].authorName").isEqualTo("John Doe");
+        assertThat(result).extractingJsonPathStringValue("$.comments[0].created")
+                .isEqualTo("2024-12-01T10:00:00");
         assertThat(result).extractingJsonPathNumberValue("$.comments[1].id").isEqualTo(11);
         assertThat(result).extractingJsonPathStringValue("$.comments[1].text").isEqualTo("Good quality");
         assertThat(result).extractingJsonPathStringValue("$.comments[1].authorName").isEqualTo("Jane Smith");
+        assertThat(result).extractingJsonPathStringValue("$.comments[1].created")
+                .isEqualTo("2024-12-02T10:00:00");
     }
 
     @Test
@@ -246,7 +245,7 @@ public class ItemWithCommentsAndBookingDtoTest {
 
     @Test
     void testSerializeDeserializeCycle() throws IOException {
-        LocalDateTime now = LocalDateTime.now();
+        LocalDateTime commentTime = LocalDateTime.of(2024, 12, 1, 10, 0, 0);
 
         BookingShortDto lastBooking = BookingShortDto.builder()
                 .id(1L)
@@ -262,7 +261,7 @@ public class ItemWithCommentsAndBookingDtoTest {
                 .id(10L)
                 .text("Great item!")
                 .authorName("John Doe")
-                .created(now)
+                .created(commentTime)
                 .build();
 
         ItemWithCommentsAndBookingDto originalDto = ItemWithCommentsAndBookingDto.builder()
@@ -286,11 +285,10 @@ public class ItemWithCommentsAndBookingDtoTest {
         assertThat(deserializedDto.getAvailable()).isEqualTo(originalDto.getAvailable());
         assertThat(deserializedDto.getOwnerId()).isEqualTo(originalDto.getOwnerId());
         assertThat(deserializedDto.getRequestId()).isEqualTo(originalDto.getRequestId());
-
         assertThat(deserializedDto.getLastBooking().getId()).isEqualTo(originalDto.getLastBooking().getId());
         assertThat(deserializedDto.getNextBooking().getId()).isEqualTo(originalDto.getNextBooking().getId());
-
         assertThat(deserializedDto.getComments()).hasSize(1);
         assertThat(deserializedDto.getComments().get(0).getText()).isEqualTo(originalDto.getComments().get(0).getText());
+        assertThat(deserializedDto.getComments().get(0).getCreated()).isEqualTo(originalDto.getComments().get(0).getCreated());
     }
 }
