@@ -30,7 +30,7 @@ public class ItemController {
     @PatchMapping("/{itemId}")
     public ResponseEntity<Object> updateItem(
             @PathVariable @Positive Long itemId,
-            @RequestBody ItemDto itemDto,
+            @RequestBody @Valid ItemDto itemDto,
             @RequestHeader("X-Sharer-User-Id") @Positive Long ownerId) {
         log.info("Запрос на обновление предмета {} от владельца {}", itemId, ownerId);
 
