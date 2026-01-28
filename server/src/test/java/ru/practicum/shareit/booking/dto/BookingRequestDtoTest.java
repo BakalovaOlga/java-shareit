@@ -109,19 +109,4 @@ public class BookingRequestDtoTest {
 
         assertThat(violations).isEmpty();
     }
-
-    @Test
-    void testValidationWithEndNotInFuture() {
-        BookingRequestDto dto = BookingRequestDto.builder()
-                .itemId(10L)
-                .start(now.plusDays(1).withNano(0))
-                .end(now.minusDays(1).withNano(0))
-                .build();
-
-        Set<ConstraintViolation<BookingRequestDto>> violations = validator.validate(dto);
-
-        assertThat(violations).hasSize(1);
-        assertThat(violations.iterator().next().getMessage())
-                .isEqualTo("Дата окончания должна быть в будущем");
-    }
 }

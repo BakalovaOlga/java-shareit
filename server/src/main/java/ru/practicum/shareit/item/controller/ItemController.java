@@ -1,9 +1,6 @@
 package ru.practicum.shareit.item.controller;
 
-import jakarta.validation.Valid;
-import jakarta.validation.constraints.Positive;
 import lombok.RequiredArgsConstructor;
-import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import ru.practicum.shareit.item.dto.CommentDto;
 import ru.practicum.shareit.item.dto.ItemDto;
@@ -20,7 +17,7 @@ import java.util.stream.Collectors;
 @RestController
 @RequestMapping("/items")
 @RequiredArgsConstructor
-@Validated
+
 public class ItemController {
     private final ItemService itemService;
     private final ItemMapper itemMapper;
@@ -28,8 +25,8 @@ public class ItemController {
 
     @PostMapping
     public ItemDto createItem(
-            @RequestBody @Valid ItemDto itemDto,
-            @RequestHeader("X-Sharer-User-Id") @Positive Long ownerId) {
+            @RequestBody ItemDto itemDto,
+            @RequestHeader("X-Sharer-User-Id") Long ownerId) {
         Item item = itemMapper.toEntity(itemDto);
 
         if (itemDto.getRequestId() != null) {
@@ -43,9 +40,9 @@ public class ItemController {
 
     @PatchMapping("/{itemId}")
     public ItemDto updateItem(
-            @PathVariable @Positive Long itemId,
+            @PathVariable Long itemId,
             @RequestBody ItemDto itemDto,
-            @RequestHeader("X-Sharer-User-Id") @Positive Long ownerId) {
+            @RequestHeader("X-Sharer-User-Id") Long ownerId) {
         itemDto.setId(itemId);
         Item item = itemMapper.toEntity(itemDto);
         Item updatedItem = itemService.update(item, ownerId);
@@ -54,22 +51,22 @@ public class ItemController {
 
     @PostMapping("/{itemId}/comment")
     public CommentDto addComment(
-            @PathVariable @Positive Long itemId,
+            @PathVariable Long itemId,
             @RequestBody CommentDto commentDto,
-            @RequestHeader("X-Sharer-User-Id") @Positive Long userId) {
+            @RequestHeader("X-Sharer-User-Id") Long userId) {
         return itemService.addComment(userId, itemId, commentDto);
     }
 
     @GetMapping("/{itemId}")
     public ItemWithCommentsAndBookingDto getItemById(
-            @PathVariable @Positive Long itemId,
+            @PathVariable Long itemId,
             @RequestHeader(value = "X-Sharer-User-Id", required = false) Long userId) {
         return itemService.getItemWithCommentsAndBookings(itemId, userId);
     }
 
     @GetMapping
     public List<ItemWithCommentsAndBookingDto> getAllItemsByOwner(
-            @RequestHeader("X-Sharer-User-Id") @Positive Long ownerId,
+            @RequestHeader("X-Sharer-User-Id") Long ownerId,
             @RequestParam(defaultValue = "0") Integer from,
             @RequestParam(defaultValue = "10") Integer size) {
         return itemService.getItemsWithCommentsAndBookingsByOwner(ownerId, from, size);
@@ -88,8 +85,8 @@ public class ItemController {
 
     @DeleteMapping("/{itemId}")
     public void deleteItem(
-            @PathVariable @Positive Long itemId,
-            @RequestHeader("X-Sharer-User-Id") @Positive Long ownerId) {
+            @PathVariable Long itemId,
+            @RequestHeader("X-Sharer-User-Id") Long ownerId) {
         itemService.delete(itemId, ownerId);
     }
 }

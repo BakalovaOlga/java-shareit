@@ -141,7 +141,7 @@ public class BookingServiceImpl implements BookingService {
         LocalDateTime now = LocalDateTime.now();
 
         userRepository.findById(userId)
-                .orElseThrow(() -> new ValidationException("Пользователь с id:" + userId + " не найден"));
+                .orElseThrow(() -> new NotFoundException("Пользователь с id:" + userId + " не найден"));
 
         if (!itemRepository.existsByOwnerId(userId)) {
             log.warn("Пользователь с id: {} не является владельцем вещей", userId);

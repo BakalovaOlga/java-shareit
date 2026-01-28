@@ -88,19 +88,6 @@ public class UserControllerTest {
                 .andExpect(jsonPath("$.email").value("test@mail.test"));
     }
 
-    @Test
-    void createUserWithBlankEmailShouldReturnBadRequest() throws Exception {
-        UserDto invalidUserDto = UserDto.builder()
-                .name("Name")
-                .email("")
-                .build();
-
-        mockMvc.perform(post("/users")
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content(objectMapper.writeValueAsString(invalidUserDto)))
-                .andExpect(status().isBadRequest());
-    }
-
     // GET /users
     @Test
     void getAllUsers() throws Exception {

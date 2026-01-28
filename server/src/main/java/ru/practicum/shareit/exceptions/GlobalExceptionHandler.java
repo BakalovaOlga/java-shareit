@@ -1,15 +1,10 @@
 package ru.practicum.shareit.exceptions;
 
-import jakarta.validation.ConstraintViolationException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
-import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
-import org.springframework.web.method.annotation.MethodArgumentTypeMismatchException;
-
-import java.util.stream.Collectors;
 
 @Slf4j
 @RestControllerAdvice
@@ -43,39 +38,10 @@ public class GlobalExceptionHandler {
         return new ErrorResponse(e.getMessage());
     }
 
-    @ExceptionHandler(MethodArgumentNotValidException.class)
-    @ResponseStatus(HttpStatus.BAD_REQUEST)
-    public ErrorResponse handleMethodArgumentNotValid(final MethodArgumentNotValidException e) {
-        String errorMessage = e.getBindingResult().getFieldErrors().stream()
-                .map(error -> error.getField() + ": " + error.getDefaultMessage())
-                .collect(Collectors.joining("; "));
-        log.warn("Ошибка валидации аргументов метода: {}", errorMessage, e);
-        return new ErrorResponse(errorMessage);
-    }
-
-    @ExceptionHandler(ConstraintViolationException.class)
-    @ResponseStatus(HttpStatus.BAD_REQUEST)
-    public ErrorResponse handleConstraintViolation(final ConstraintViolationException e) {
-        String errorMessage = e.getConstraintViolations().stream()
-                .map(violation -> violation.getPropertyPath() + ": " + violation.getMessage())
-                .collect(Collectors.joining("; "));
-        log.warn("Ошибка валидации: {}", errorMessage, e);
-        return new ErrorResponse(errorMessage);
-    }
-
     @ExceptionHandler
     @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
     public ErrorResponse handleOtherExceptions(final Exception e) {
         log.error("Внутренняя ошибка сервера: {}", e.getMessage(), e);
         return new ErrorResponse(e.getMessage());
-    }
-
-    @ExceptionHandler(MethodArgumentTypeMismatchException.class)
-    @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
-    public ErrorResponse handleMethodArgumentTypeMismatch(final MethodArgumentTypeMismatchException e) {
-        String errorMessage = String.format("Неверный тип параметра '%s': ожидается %s",
-                e.getName(), e.getRequiredType() != null ? e.getRequiredType().getSimpleName() : "неизвестный тип");
-        log.warn(errorMessage, e);
-        return new ErrorResponse(errorMessage);
     }
 }

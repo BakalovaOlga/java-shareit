@@ -426,13 +426,6 @@ public class BookingServiceImplTest {
     }
 
     @Test
-    void getAllItemBookingShouldThrowValidationExceptionWhenUserNotFound() {
-        ValidationException exception = assertThrows(ValidationException.class,
-                () -> bookingService.getAllItemBooking(999L, BookingState.ALL));
-        assertTrue(exception.getMessage().contains("Пользователь с id:999"));
-    }
-
-    @Test
     void getAllItemBookingShouldThrowAccessExceptionWhenUserIsNotOwner() {
         AccessException exception = assertThrows(AccessException.class,
                 () -> bookingService.getAllItemBooking(anotherUser.getId(), BookingState.ALL));

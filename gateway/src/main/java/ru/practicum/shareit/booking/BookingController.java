@@ -55,4 +55,15 @@ public class BookingController {
         log.info("Запрос на получение бронирований пользователя {}, state: {}", userId, state);
         return bookingClient.getBookings(userId, BookingState.valueOf(state), from, size);
     }
+
+    @GetMapping("/owner")
+    public ResponseEntity<Object> getOwnerBookings(
+            @Positive @RequestHeader("X-Sharer-User-Id") Long userId,
+            @RequestParam(value = "state", defaultValue = "ALL") String state,
+            @PositiveOrZero @RequestParam(value = "from", defaultValue = "0") Integer from,
+            @Positive @RequestParam(value = "size", defaultValue = "10") Integer size) {
+
+        log.info("Запрос на получение бронирований ВЛАДЕЛЬЦА {}, state: {}", userId, state);
+        return bookingClient.getOwnerBookings(userId, BookingState.valueOf(state), from, size);
+    }
 }

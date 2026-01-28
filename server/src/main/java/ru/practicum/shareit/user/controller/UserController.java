@@ -1,10 +1,7 @@
 package ru.practicum.shareit.user.controller;
 
-import jakarta.validation.Valid;
-import jakarta.validation.constraints.Positive;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
-import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import ru.practicum.shareit.user.dto.UserDto;
 import ru.practicum.shareit.user.mapper.UserMapper;
@@ -17,20 +14,19 @@ import java.util.stream.Collectors;
 @RestController
 @RequestMapping(path = "/users")
 @RequiredArgsConstructor
-@Validated
 public class UserController {
     private final UserService userService;
     private final UserMapper userMapper;
 
     @PostMapping
-    public ResponseEntity<UserDto> createUser(@Valid @RequestBody UserDto userDto) {
+    public ResponseEntity<UserDto> createUser(@RequestBody UserDto userDto) {
         User user = userMapper.toEntity(userDto);
         User created = userService.createUser(user);
         return ResponseEntity.ok(userMapper.toDto(created));
     }
 
     @PatchMapping("/{userId}")
-    public ResponseEntity<UserDto> updateUser(@PathVariable @Positive Long userId,
+    public ResponseEntity<UserDto> updateUser(@PathVariable Long userId,
                                               @RequestBody UserDto userDto) {
 
         User existingUser = userService.getUser(userId);
@@ -41,7 +37,7 @@ public class UserController {
     }
 
     @GetMapping("/{userId}")
-    public ResponseEntity<UserDto> getUser(@PathVariable @Positive Long userId) {
+    public ResponseEntity<UserDto> getUser(@PathVariable Long userId) {
         User user = userService.getUser(userId);
         return ResponseEntity.ok(userMapper.toDto(user));
     }
@@ -56,7 +52,7 @@ public class UserController {
     }
 
     @DeleteMapping("/{userId}")
-    public ResponseEntity<Void> deleteUser(@PathVariable @Positive Long userId) {
+    public ResponseEntity<Void> deleteUser(@PathVariable Long userId) {
         userService.deleteUser(userId);
         return ResponseEntity.noContent().build();
     }
