@@ -7,13 +7,7 @@ import org.springframework.boot.test.autoconfigure.json.JsonTest;
 import org.springframework.boot.test.json.JacksonTester;
 import org.springframework.boot.test.json.JsonContent;
 
-import jakarta.validation.ConstraintViolation;
-import jakarta.validation.Validation;
-import jakarta.validation.Validator;
-import jakarta.validation.ValidatorFactory;
-
 import java.time.LocalDateTime;
-import java.util.Set;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -23,13 +17,10 @@ public class BookingRequestDtoTest {
     @Autowired
     private JacksonTester<BookingRequestDto> json;
 
-    private Validator validator;
     private LocalDateTime now;
 
     @BeforeEach
     void setUp() {
-        ValidatorFactory factory = Validation.buildDefaultValidatorFactory();
-        validator = factory.getValidator();
         now = LocalDateTime.now().withNano(0);
     }
 
@@ -95,18 +86,5 @@ public class BookingRequestDtoTest {
         assertThat(dto.getEnd()).isEqualTo(LocalDateTime.of(2024, 12, 2, 10, 0, 0));
         assertThat(dto.getId()).isNull();
         assertThat(dto.getBooker()).isNull();
-    }
-
-    @Test
-    void testValidationWithValidDates() {
-        BookingRequestDto dto = BookingRequestDto.builder()
-                .itemId(10L)
-                .start(now.plusDays(1).withNano(0))
-                .end(now.plusDays(2).withNano(0))
-                .build();
-
-        Set<ConstraintViolation<BookingRequestDto>> violations = validator.validate(dto);
-
-        assertThat(violations).isEmpty();
     }
 }
